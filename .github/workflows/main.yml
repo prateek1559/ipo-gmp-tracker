@@ -2,7 +2,8 @@ name: IPO GMP Tracker
 
 on:
   schedule:
-    - cron: '30 6 * * *'   # Runs daily at 12:00 PM IST
+    # Runs daily at 12:00 PM IST (06:30 UTC)
+    - cron: '30 6 * * *'
   workflow_dispatch:
 
 jobs:
@@ -10,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repo
+      - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Set up Python
@@ -20,16 +21,12 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install requests beautifulsoup4 gspread google-auth google-auth-oauthlib google-auth-httplib2
-
-      - name: Create Google credentials file
-        run: |
-          echo "${{ secrets.GOOGLE_CREDENTIALS_JSON }}" > credentials.json
+          pip install requests beautifulsoup4 gspread google-auth
 
       - name: Run IPO GMP script
         env:
           SENDER_EMAIL: ${{ secrets.SENDER_EMAIL }}
           APP_PASSWORD: ${{ secrets.APP_PASSWORD }}
-          RECEIVER_EMAIL: ${{ secrets.RECEIVER_EMAIL }}
+          GOOGLE_CREDENTIALS_JSON: ${{ secrets.GOOGLE_CREDENTIALS_JSON }}
         run: |
           python test_scrape.py
